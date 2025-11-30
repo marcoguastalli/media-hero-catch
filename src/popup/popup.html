@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Hero Catch</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📸 Media Hero Catch</h1>
+      <p class="subtitle">Download hero media from any webpage</p>
+    </header>
+
+    <main>
+      <section class="input-section">
+        <label for="urls">Paste URLs (one per line):</label>
+        <textarea 
+          id="urls" 
+          placeholder="https://instagram.com/p/example&#10;https://example.com/article&#10;https://twitter.com/status/..."
+          rows="6"
+        ></textarea>
+        
+        <div class="settings-row">
+          <label for="delay">
+            Delay between URLs (seconds):
+            <input 
+              type="number" 
+              id="delay" 
+              min="0" 
+              max="30" 
+              value="2"
+              step="1"
+            >
+          </label>
+        </div>
+
+        <div class="button-group">
+          <button id="processBtn" class="primary">Process All</button>
+          <button id="clearBtn" class="secondary">Clear</button>
+        </div>
+      </section>
+
+      <section class="status-section" id="statusSection" style="display: none;">
+        <div class="progress-header">
+          <h3>Processing...</h3>
+          <span id="progressText">0/0</span>
+        </div>
+        
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+
+        <div id="urlList" class="url-list"></div>
+      </section>
+
+      <section class="results-section" id="resultsSection" style="display: none;">
+        <h3>Batch Complete!</h3>
+        <div class="results-summary">
+          <div class="result-stat success">
+            <span class="result-label">Successful:</span>
+            <span id="successCount">0</span>
+          </div>
+          <div class="result-stat failed">
+            <span class="result-label">Failed:</span>
+            <span id="failedCount">0</span>
+          </div>
+        </div>
+        <button id="newBatchBtn" class="primary">Start New Batch</button>
+      </section>
+    </main>
+
+    <footer>
+      <p class="version">v1.0.0</p>
+    </footer>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

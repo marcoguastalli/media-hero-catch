@@ -1,0 +1,52 @@
+{
+  "manifest_version": 2,
+  "name": "Media Hero Catch",
+  "version": "1.0.0",
+  "description": "Automatically detect and download hero media (images/videos) from webpages, including Instagram carousels",
+  "author": "Your Name",
+  
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+  
+  "permissions": [
+    "downloads",
+    "tabs",
+    "activeTab",
+    "<all_urls>",
+    "webRequest"
+  ],
+  
+  "background": {
+    "scripts": ["src/background/background.js"]
+  },
+  
+  "browser_action": {
+    "default_icon": {
+      "48": "icons/icon-48.png"
+    },
+    "default_title": "Media Hero Catch",
+    "default_popup": "src/popup/popup.html"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/content-script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  
+  "web_accessible_resources": [
+    "src/content/detectors/*",
+    "src/content/utils/*"
+  ],
+  
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "media-hero-catch@example.com",
+      "strict_min_version": "115.0"
+    }
+  }
+}

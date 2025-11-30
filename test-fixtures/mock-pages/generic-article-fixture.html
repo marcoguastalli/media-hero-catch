@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample Article - Test Fixture</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header-logo {
+      width: 48px;
+      height: 48px;
+    }
+    .hero-image {
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+    }
+    .thumbnail {
+      width: 150px;
+      height: 100px;
+      margin: 10px;
+    }
+    .ad-banner {
+      width: 728px;
+      height: 90px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://example.com/logo.png" alt="Logo" class="header-logo icon">
+  </header>
+
+  <article>
+    <h1>Amazing Discovery in Deep Ocean</h1>
+    
+    <!-- Hero Image (This should be detected) -->
+    <img 
+      src="https://example.com/images/hero-ocean-discovery.jpg" 
+      srcset="https://example.com/images/hero-ocean-discovery-640.jpg 640w,
+              https://example.com/images/hero-ocean-discovery-1280.jpg 1280w,
+              https://example.com/images/hero-ocean-discovery-1920.jpg 1920w"
+      alt="Deep Ocean Discovery"
+      class="hero-image"
+      width="800"
+      height="600"
+    >
+    
+    <p>Scientists have made an incredible discovery in the depths of the Pacific Ocean...</p>
+    
+    <!-- Advertisement (Should be filtered out) -->
+    <div class="ad-container">
+      <img src="https://example.com/ads/banner.jpg" alt="Ad" class="ad-banner advertisement">
+    </div>
+    
+    <p>The research team, led by Dr. Jane Smith, used advanced submersible technology...</p>
+    
+    <!-- Thumbnails (Should be filtered out - too small) -->
+    <div class="related-articles">
+      <h3>Related Articles</h3>
+      <img src="https://example.com/thumb1.jpg" alt="Thumbnail 1" class="thumbnail">
+      <img src="https://example.com/thumb2.jpg" alt="Thumbnail 2" class="thumbnail">
+      <img src="https://example.com/thumb3.jpg" alt="Thumbnail 3" class="thumbnail">
+    </div>
+  </article>
+
+  <footer>
+    <img src="https://example.com/social-icon.png" alt="Social" class="icon" width="32" height="32">
+  </footer>
+</body>
+</html>
