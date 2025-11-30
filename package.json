@@ -33,12 +33,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/media-hero-catch.git"
+    "url": "https://github.com/marcoguastalli/media-hero-catch.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/media-hero-catch/issues"
+    "url": "https://github.com/marcoguastalli/media-hero-catch/issues"
   },
-  "homepage": "https://github.com/YOUR_USERNAME/media-hero-catch#readme",
+  "homepage": "https://github.com/marcoguastalli/media-hero-catch#readme",
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.23.0",
