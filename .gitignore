@@ -1,3 +1,25 @@
+# Dependencies
+node_modules/
+jspm_packages/
+package-lock.json
+
+# Build output
+dist/
+*.zip
+*.xpi
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
 # Logs
 logs
 *.log
@@ -37,9 +59,6 @@ bower_components
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
-# Dependency directories
-node_modules/
-jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
@@ -93,7 +112,7 @@ dist
 
 # vuepress v2.x temp and cache directory
 .temp
-.cache
+
 
 # Sveltekit cache directory
 .svelte-kit/
