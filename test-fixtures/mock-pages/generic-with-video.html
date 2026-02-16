@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Article - Test Fixture</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .hero-video {
+      width: 100%;
+      max-width: 1200px;
+      height: 675px;
+    }
+    .sidebar-ad {
+      width: 300px;
+      height: 250px;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <h1>Breaking News: Live Coverage</h1>
+    
+    <!-- Hero Video (This should be detected) -->
+    <video 
+      class="hero-video" 
+      controls
+      width="1200"
+      height="675"
+    >
+      <source src="https://example.com/videos/breaking-news-1920.mp4" type="video/mp4">
+      <source src="https://example.com/videos/breaking-news-1920.webm" type="video/webm">
+    </video>
+    
+    <p>Watch our live coverage of the breaking news event...</p>
+    
+    <!-- Sidebar ad image (Should not be selected - video has priority) -->
+    <aside>
+      <img src="https://example.com/ads/sidebar.jpg" alt="Advertisement" class="sidebar-ad">
+    </aside>
+  </article>
+</body>
+</html>

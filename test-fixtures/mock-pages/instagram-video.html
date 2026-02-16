@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Video Post - Test Fixture</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #fafafa;
+    }
+    article {
+      max-width: 614px;
+      margin: 0 auto;
+      background: white;
+      border: 1px solid #dbdbdb;
+      border-radius: 3px;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+    }
+    .profile-pic {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 12px;
+    }
+    .post-video {
+      width: 100%;
+      display: block;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <img 
+        src="https://instagram.com/static/images/profile_placeholder.jpg" 
+        alt="videomaker's profile picture"
+        class="profile-pic"
+      >
+      <span><strong>videomaker</strong></span>
+    </div>
+
+    <!-- Main Post Video (This should be detected) -->
+    <video 
+      class="post-video" 
+      controls
+      width="614"
+      height="614"
+    >
+      <source src="https://instagram.com/p/VIDEO123/video.mp4" type="video/mp4">
+    </video>
+
+    <!-- Caption -->
+    <div style="padding: 0 16px 16px;">
+      <p><strong>videomaker</strong> Check out this amazing moment! 🎥</p>
+      <p style="color: #8e8e8e; font-size: 12px;">1 HOUR AGO</p>
+    </div>
+  </article>
+</body>
+</html>

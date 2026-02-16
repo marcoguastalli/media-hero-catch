@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Post - Test Fixture</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #fafafa;
+    }
+    article {
+      max-width: 614px;
+      margin: 0 auto;
+      background: white;
+      border: 1px solid #dbdbdb;
+      border-radius: 3px;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+    }
+    .profile-pic {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 12px;
+    }
+    .post-image {
+      width: 100%;
+      display: block;
+    }
+    .post-actions {
+      padding: 8px 16px;
+    }
+    .action-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 16px;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <img 
+        src="https://instagram.com/static/images/profile_placeholder.jpg" 
+        alt="testuser's profile picture"
+        class="profile-pic"
+      >
+      <span><strong>testuser</strong></span>
+    </div>
+
+    <!-- Main Post Image (This should be detected) -->
+    <img 
+      src="https://instagram.com/p/ABC123/media?size=l" 
+      srcset="https://instagram.com/p/ABC123/media?size=s 320w,
+              https://instagram.com/p/ABC123/media?size=m 640w,
+              https://instagram.com/p/ABC123/media?size=l 1080w"
+      alt="Photo by testuser"
+      class="post-image"
+    >
+
+    <!-- Post Actions -->
+    <div class="post-actions">
+      <img src="https://instagram.com/static/images/like_icon.png" alt="Like icon" class="action-icon">
+      <img src="https://instagram.com/static/images/comment_icon.png" alt="Comment icon" class="action-icon">
+      <img src="https://instagram.com/static/images/share_icon.png" alt="Share icon" class="action-icon">
+    </div>
+
+    <!-- Caption -->
+    <div style="padding: 0 16px 16px;">
+      <p><strong>testuser</strong> Amazing sunset at the beach! 🌅</p>
+      <p style="color: #8e8e8e; font-size: 12px;">2 HOURS AGO</p>
+    </div>
+  </article>
+</body>
+</html>
