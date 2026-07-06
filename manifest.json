@@ -15,11 +15,12 @@
     "tabs",
     "activeTab",
     "<all_urls>",
-    "webRequest"
+    "webRequest",
+    "notifications"
   ],
-  
+
   "background": {
-    "scripts": ["src/background/background.js"]
+    "page": "src/background/background.html"
   },
   
   "browser_action": {
@@ -34,7 +35,8 @@
     {
       "matches": ["<all_urls>"],
       "js": ["src/content/content-script.js"],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "type": "module"
     }
   ],
   

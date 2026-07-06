@@ -188,14 +188,18 @@ async function processUrl(url) {
     // Wait a bit for content script to load
     await sleep(1000);
 
+    // Set up the resolver BEFORE sending the message so it is in place when
+    // MEDIA_DETECTED arrives (the content script can send MEDIA_DETECTED while
+    // the background is still awaiting the tabs.sendMessage response, which
+    // would miss the resolver if it were created afterward).
+    const resultPromise = waitForAnalysisResult(url, 30000); // 30 second timeout
+
     // Send analyze message to content script
     const analyzeMessage = createMessage(ANALYZE_PAGE, { url });
-    
     await browserAPI.tabs.sendMessage(tabId, analyzeMessage);
 
-    // Wait for analysis to complete (handled via MEDIA_DETECTED message)
-    // This will be resolved in handleMediaDetected
-    const result = await waitForAnalysisResult(url, 30000); // 30 second timeout
+    // Now await the result (resolver was set up before the message was sent)
+    const result = await resultPromise;
 
     return result;
   } catch (error) {

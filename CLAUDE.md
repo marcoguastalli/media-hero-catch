@@ -9,10 +9,11 @@ Media Hero Catch is a Firefox WebExtension (Manifest V2) that detects and downlo
 ## Commands
 
 ```bash
-npm test                    # Run all tests
+npm test                    # Unit + integration tests (skips e2e)
+npm run test:all            # All tests including e2e (requires Firefox)
 npm run test:unit           # Unit tests only
 npm run test:integration    # Integration tests only
-npm run test:e2e            # E2E tests only
+npm run test:e2e            # E2E tests only (Puppeteer)
 npm run test:coverage       # Tests with coverage report
 npm run test:watch          # Watch mode
 
@@ -21,8 +22,8 @@ npm run lint:fix            # Auto-fix lint issues
 npm run format              # Prettier format
 npm run format:check        # Check formatting
 
-npm run build               # Build .zip to dist/
-npm run start:firefox       # Launch Firefox with extension loaded
+npm run build               # Bundle src/ → dist/, package to web-ext-artifacts/*.zip
+npm run start:firefox       # Bundle and launch Firefox with extension loaded
 npm run validate            # Full CI check (lint + format:check + test)
 ```
 
@@ -44,10 +45,18 @@ Three-component message-passing architecture:
 - `src/content/detectors/detector-registry.js` — Routes to site-specific detector (Instagram) or generic
 - `src/content/detectors/generic-detector.js` — Scores media by area with viewport/quality bonuses, min 200px
 - `src/content/detectors/instagram-detector.js` — Handles posts, carousels (up to 10 items), reels
+- `src/content/utils/dom-analyzer.js` — DOM traversal helpers used by detectors
+- `src/content/utils/media-extractor.js` — Extracts URLs from srcset, background-image, and video sources
 
 ### Adding a new site-specific detector
 
 Register it in `detector-registry.js` following the Instagram detector pattern. Each detector must implement `detect()` returning an array of media objects.
+
+## Build System
+
+Source files (`src/`) use ES modules and are bundled by esbuild (`scripts/build.js`) into IIFE format under `dist/`. The build script also patches `manifest.json`: it updates script paths to the bundled files and drops `web_accessible_resources` (no longer needed once bundled). `web-ext` then packages `dist/` into a `.zip` under `web-ext-artifacts/`.
+
+When running `npm run start:firefox`, the build runs first automatically. The `src/` files are the source of truth — never edit `dist/` directly.
 
 ## Code Style
 

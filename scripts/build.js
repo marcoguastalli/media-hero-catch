@@ -62,8 +62,11 @@ for (const file of fs.readdirSync(path.join(ROOT, 'icons'))) {
 const manifest = JSON.parse(
   fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8')
 );
+// Bundled output uses a plain IIFE script, not a background page
 manifest.background = { scripts: ['background.js'] };
+// Bundled content script is an IIFE — remove the module type added for source loading
 manifest.content_scripts[0].js = ['content-script.js'];
+delete manifest.content_scripts[0].type;
 manifest.browser_action.default_popup = 'popup/popup.html';
 // web_accessible_resources no longer needed (everything is bundled)
 delete manifest.web_accessible_resources;
