@@ -26,11 +26,14 @@ A Firefox browser extension that automatically detects and downloads hero media 
 
 ### For Users
 
-1. Download the latest release `.xpi` file from [Releases](https://github.com/marcoguastalli/media-hero-catch/releases)
-2. Open Firefox
-3. Go to `about:addons`
-4. Click the gear icon → "Install Add-on From File"
-5. Select the downloaded `.xpi` file
+The extension is not signed by Mozilla, so regular Firefox will refuse to install it permanently via `about:addons`. Load it as a temporary add-on instead:
+
+1. Download the latest release `.xpi` (or `.zip`) file from [Releases](https://github.com/marcoguastalli/media-hero-catch/releases)
+2. Open Firefox and go to `about:debugging#/runtime/this-firefox`
+3. Click "Load Temporary Add-on…"
+4. Select the downloaded `.xpi` file
+
+Note: temporary add-ons are removed when Firefox restarts. For a permanent install you need [Firefox Developer Edition or Nightly](https://www.mozilla.org/firefox/channel/desktop/) with `xpinstall.signatures.required` set to `false` in `about:config` — then the `about:addons` → gear icon → "Install Add-on From File" route works.
 
 ### For Developers
 
