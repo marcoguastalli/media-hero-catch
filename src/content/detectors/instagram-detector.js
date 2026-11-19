@@ -43,13 +43,29 @@ export async function detectHeroMedia() {
 }
 
 /**
+ * Find the post container element. Instagram's markup has changed over time
+ * (posts are not reliably wrapped in <article> anymore), so this tries a
+ * series of increasingly broad fallbacks instead of relying on one selector.
+ * @returns {HTMLElement} Post container (falls back to document.body)
+ */
+function getPostContainer() {
+  return (
+    document.querySelector('article') ||
+    document.querySelector('[role="dialog"] main') ||
+    document.querySelector('[role="dialog"]') ||
+    document.querySelector('main') ||
+    document.body
+  );
+}
+
+/**
  * Detect the type of Instagram post
  * @returns {string} Post type: 'carousel', 'video', 'reel', 'image', or 'unknown'
  */
 function detectPostType() {
   // Check URL for post type hints
   const url = window.location.href;
-  
+
   if (url.includes('/reel/') || url.includes('/reels/')) {
     return 'reel';
   }
@@ -59,14 +75,16 @@ function detectPostType() {
     return 'carousel';
   }
 
+  const container = getPostContainer();
+
   // Check for video elements
-  const videos = document.querySelectorAll('article video');
+  const videos = container.querySelectorAll('video');
   if (videos.length > 0) {
     return 'video';
   }
 
   // Check for image elements
-  const images = document.querySelectorAll('article img[srcset]');
+  const images = container.querySelectorAll('img[srcset]');
   if (images.length > 0) {
     return 'image';
   }
@@ -97,16 +115,12 @@ async function detectCarousel() {
   console.log('Instagram detector: Detecting carousel');
 
   const mediaList = [];
-  
-  // Find all media elements within the article/post container
-  const article = document.querySelector('article');
-  if (!article) {
-    console.warn('Instagram detector: No article container found');
-    return [];
-  }
+
+  // Find all media elements within the post container
+  const container = getPostContainer();
 
   // Strategy 1: Find all images with srcset (most reliable)
-  const images = article.querySelectorAll('img[srcset]');
+  const images = container.querySelectorAll('img[srcset]');
   const uniqueImageUrls = new Set();
 
   for (const img of images) {
@@ -124,7 +138,7 @@ async function detectCarousel() {
   }
 
   // Strategy 2: Find all videos
-  const videos = article.querySelectorAll('video');
+  const videos = container.querySelectorAll('video');
   const uniqueVideoUrls = new Set();
 
   for (const video of videos) {
@@ -157,12 +171,9 @@ async function detectCarousel() {
 async function detectVideo() {
   console.log('Instagram detector: Detecting video');
 
-  const article = document.querySelector('article');
-  if (!article) {
-    return [];
-  }
+  const container = getPostContainer();
 
-  const video = article.querySelector('video');
+  const video = container.querySelector('video');
   if (!video) {
     console.warn('Instagram detector: No video found');
     return [];
@@ -213,13 +224,10 @@ async function detectReel() {
 async function detectImage() {
   console.log('Instagram detector: Detecting image');
 
-  const article = document.querySelector('article');
-  if (!article) {
-    return [];
-  }
+  const container = getPostContainer();
 
   // Find the main image (usually has srcset and is not a profile picture)
-  const images = article.querySelectorAll('img[srcset]');
+  const images = container.querySelectorAll('img[srcset]');
   
   for (const img of images) {
     // Skip profile pictures and UI elements

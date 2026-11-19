@@ -7,6 +7,7 @@
 import { browserAPI } from '../shared/browser-api.js';
 import {
   PROCESS_URLS,
+  GET_BATCH_STATUS,
   PROGRESS_UPDATE,
   BATCH_COMPLETE,
   URL_PROCESSED,
@@ -36,7 +37,7 @@ let currentBatch = null;
 /**
  * Initialize popup
  */
-function init() {
+async function init() {
   console.log('Popup initialized');
 
   // Event listeners
@@ -49,6 +50,74 @@ function init() {
 
   // Load saved delay value if any
   loadSettings();
+
+  // The popup is torn down and recreated every time it opens/closes, so if a
+  // batch is still running in the background (e.g. the popup lost focus
+  // mid-batch and closed) its progress would otherwise appear to have
+  // vanished. Re-sync with the background script's real state on open.
+  await rehydrateFromBackground();
+}
+
+/**
+ * Query the background script for an in-progress batch and rebuild the
+ * status UI from it, if one exists
+ */
+async function rehydrateFromBackground() {
+  try {
+    const response = await browserAPI.runtime.sendMessage(
+      createMessage(GET_BATCH_STATUS)
+    );
+
+    if (response && response.isProcessing && response.batch) {
+      rehydrateBatchUI(response.batch);
+    }
+  } catch (error) {
+    console.error('Failed to query batch status:', error);
+  }
+}
+
+/**
+ * Rebuild the status section from a background batch snapshot
+ * @param {Object} batch - Batch state from the background script
+ */
+function rehydrateBatchUI(batch) {
+  isProcessing = true;
+  currentBatch = {
+    total: batch.total,
+    current: batch.current,
+    urlItems: new Map(),
+  };
+
+  statusSection.style.display = 'block';
+  resultsSection.style.display = 'none';
+  processBtn.disabled = true;
+
+  const percentage = (batch.current / batch.total) * 100;
+  progressFill.style.width = `${percentage}%`;
+  progressText.textContent = `${batch.current}/${batch.total}`;
+
+  urlList.innerHTML = '';
+  batch.urls.forEach((url, index) => {
+    const result = batch.results[index];
+    const status = getRehydratedStatus(result, index, batch.current);
+    const item = createUrlItem(url, status);
+    currentBatch.urlItems.set(url, item);
+    urlList.appendChild(item);
+  });
+}
+
+/**
+ * Determine the status to show for a URL when rehydrating
+ * @param {Object|undefined} result - Recorded result for this URL, if any
+ * @param {number} index - URL index in the batch
+ * @param {number} current - Number of URLs processed so far
+ * @returns {string} Status type
+ */
+function getRehydratedStatus(result, index, current) {
+  if (result) {
+    return result.status;
+  }
+  return index < current ? STATUS_TYPES.PROCESSING : STATUS_TYPES.PENDING;
 }
 
 /**
@@ -181,6 +250,14 @@ function handleMessage(message) {
 function handleProgressUpdate(data) {
   const { current, total, status, url } = data;
 
+  // The background script sends this immediately after starting the batch,
+  // which can race ahead of the PROCESS_URLS response that normally
+  // initializes currentBatch via startProcessing(). Initialize it here too
+  // so an early PROGRESS_UPDATE cannot crash the handler.
+  if (!currentBatch) {
+    startProcessing(total);
+  }
+
   // Update progress bar
   const percentage = (current / total) * 100;
   progressFill.style.width = `${percentage}%`;
@@ -206,8 +283,12 @@ function handleProgressUpdate(data) {
  * @param {Object} data - Processed URL data
  */
 function handleUrlProcessed(data) {
+  if (!currentBatch) {
+    return;
+  }
+
   const { url, result } = data;
-  
+
   const urlItem = currentBatch.urlItems.get(url);
   if (urlItem) {
     updateUrlItem(urlItem, result.status, result);

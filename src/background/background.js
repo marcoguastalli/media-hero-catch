@@ -11,9 +11,12 @@
 import { browserAPI } from '../shared/browser-api.js';
 import {
   PROCESS_URLS,
+  GET_BATCH_STATUS,
   ANALYZE_PAGE,
+  PING_CONTENT_SCRIPT,
   MEDIA_DETECTED,
   ANALYSIS_FAILED,
+  CONTENT_SCRIPT_READY,
   PROGRESS_UPDATE,
   BATCH_COMPLETE,
   URL_PROCESSED,
@@ -59,13 +62,21 @@ async function handleMessage(message, sender) {
     switch (message.type) {
       case PROCESS_URLS:
         return await handleProcessUrls(message.data);
-      
+
+      case GET_BATCH_STATUS:
+        return { success: true, isProcessing, batch: currentBatch };
+
       case MEDIA_DETECTED:
         return await handleMediaDetected(message.data, sender);
       
       case ANALYSIS_FAILED:
         return await handleAnalysisFailed(message.data, sender);
-      
+
+      case CONTENT_SCRIPT_READY:
+        // Informational only — the background script doesn't need to react,
+        // it just shouldn't be logged as an unhandled/unknown message type.
+        return { success: true };
+
       default:
         console.warn('Unknown message type:', message.type);
         return { success: false, error: 'Unknown message type' };
@@ -178,15 +189,19 @@ async function processUrl(url) {
   let tabId = null;
 
   try {
-    // Open URL in new background tab
+    // Open URL in new tab
+    // DEBUG: temporarily active:true (instead of false) so it's visible for
+    // manual inspection — revert once diagnosed
     const tab = await browserAPI.tabs.create({
       url,
-      active: false,
+      active: true,
     });
     tabId = tab.id;
 
-    // Wait a bit for content script to load
-    await sleep(1000);
+    // Wait until the content script is actually ready — heavy pages
+    // (e.g. Instagram) can take several seconds before injection at
+    // document_idle, and a fixed sleep is not enough.
+    await waitForContentScript(tabId);
 
     // Set up the resolver BEFORE sending the message so it is in place when
     // MEDIA_DETECTED arrives (the content script can send MEDIA_DETECTED while
@@ -215,6 +230,29 @@ async function processUrl(url) {
       }
     }
   }
+}
+
+/**
+ * Ping the content script until it responds or the timeout expires
+ * @param {number} tabId - Tab to ping
+ * @returns {Promise<void>}
+ */
+async function waitForContentScript(tabId) {
+  const deadline = Date.now() + CONFIG.detection.pageTimeout;
+
+  while (Date.now() < deadline) {
+    try {
+      await browserAPI.tabs.sendMessage(
+        tabId,
+        createMessage(PING_CONTENT_SCRIPT)
+      );
+      return;
+    } catch {
+      await sleep(500);
+    }
+  }
+
+  throw new Error('Content script did not become ready in time');
 }
 
 /**

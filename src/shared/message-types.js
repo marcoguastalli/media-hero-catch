@@ -11,6 +11,7 @@ export const PROCESS_URLS = 'PROCESS_URLS';
 export const GET_SETTINGS = 'GET_SETTINGS';
 export const UPDATE_SETTINGS = 'UPDATE_SETTINGS';
 export const CANCEL_BATCH = 'CANCEL_BATCH';
+export const GET_BATCH_STATUS = 'GET_BATCH_STATUS';
 
 // Background → Content
 export const ANALYZE_PAGE = 'ANALYZE_PAGE';

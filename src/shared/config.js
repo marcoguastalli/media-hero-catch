@@ -10,7 +10,7 @@ export const CONFIG = {
     defaultDelay: 2, // seconds between processing URLs
     maxDelay: 30, // maximum delay allowed
     minDelay: 0, // minimum delay allowed
-    tabCloseDelay: 1000, // ms to wait before closing tab after download
+    tabCloseDelay: 60000, // DEBUG: temporarily extended from 1000ms so the tab stays open for manual inspection — revert once diagnosed
   },
 
   // Media Detection Settings

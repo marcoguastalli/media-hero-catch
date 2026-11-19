@@ -8,6 +8,8 @@
 import { browserAPI } from '../shared/browser-api.js';
 import {
   ANALYZE_PAGE,
+  PING_CONTENT_SCRIPT,
+  PONG,
   MEDIA_DETECTED,
   ANALYSIS_FAILED,
   CONTENT_SCRIPT_READY,
@@ -59,9 +61,12 @@ async function handleMessage(message) {
 
   try {
     switch (message.type) {
+      case PING_CONTENT_SCRIPT:
+        return { success: true, type: PONG };
+
       case ANALYZE_PAGE:
         return await handleAnalyzePage();
-      
+
       default:
         console.warn('Unknown message type:', message.type);
         return { success: false, error: 'Unknown message type' };
@@ -84,11 +89,11 @@ async function handleAnalyzePage() {
     // Wait for page to be fully loaded if needed
     await waitForPageReady();
 
-    // Detect hero media using appropriate detector
-    const mediaResults = await detectHeroMedia();
+    // Detect hero media, retrying while the SPA renders
+    const mediaResults = await detectWithRetry();
 
     if (mediaResults.length === 0) {
-      throw new Error('No hero media found');
+      throwNoMediaError();
     }
 
     // Send detected media back to background script
@@ -121,6 +126,53 @@ async function handleAnalyzePage() {
       error: error.message,
     };
   }
+}
+
+/**
+ * Run detection with retries — SPA pages (e.g. Instagram) render media
+ * after the load event, so a single immediate pass can miss it
+ * @returns {Promise<Array>} Detected media (may be empty)
+ */
+async function detectWithRetry() {
+  const deadline = Date.now() + CONFIG.detection.mutationObserverTimeout;
+
+  let results = await detectHeroMedia();
+
+  while (results.length === 0 && Date.now() < deadline) {
+    await sleep(500);
+    results = await detectHeroMedia();
+  }
+
+  return results;
+}
+
+/**
+ * Throw the most descriptive error for a zero-result detection —
+ * on Instagram the usual cause is a login wall, which deserves a
+ * clearer message than "no media found"
+ */
+function throwNoMediaError() {
+  const onInstagram = window.location.hostname.includes('instagram.com');
+  const hasLoginForm = !!document.querySelector(
+    'input[name="username"], input[name="password"]'
+  );
+
+  if (onInstagram && hasLoginForm) {
+    throw new Error(
+      'Login required — Instagram is showing a login wall on this page'
+    );
+  }
+
+  throw new Error('No hero media found');
+}
+
+/**
+ * Sleep utility
+ * @param {number} ms - Milliseconds to sleep
+ * @returns {Promise<void>}
+ */
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
